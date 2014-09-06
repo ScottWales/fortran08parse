@@ -125,24 +125,135 @@ otherSpecificationStmt          : accessStmt
                                 | valueStmt
                                 ;
 
-// 3.1.1
+// R213
+executableConstruct             : actionStmt
+                                | associateConstruct
+                                | blockConstruct
+                                | caseConstruct
+                                | criticalConstruct
+                                | doConstruct
+                                | forallConstruct
+                                | ifConstruct
+                                | selectTypeConstruct
+                                | whereConstruct
+                                ;
+// R 214
+actionStmt                      : allocateStmt
+                                | assignmentStmt
+                                | backspaceStmt
+                                | callStmt
+                                | closeStmt
+                                | continueStmt
+                                | cycleStmt
+                                | deallocateStmt
+                                | endFunctionStmt
+                                | endMpSubprogramStmt
+                                | endProgramStmt
+                                | endSubroutineStmt
+                                | endfileStmt
+                                | errorStopStmt
+                                | exitStmt
+                                | flushStmt
+                                | forallStmt
+                                | gotoStmt
+                                | ifStmt
+                                | inquireStmt
+                                | lockStmt
+                                | nullifyStmt
+                                | openStmt
+                                | pointerAssignmentStmt
+                                | printStmt
+                                | readStmt
+                                | returnStmt
+                                | rewindStmt
+                                | stopStmt
+                                | syncAllStmt
+                                | syncImagesStmt
+                                | syncMemoryStmt
+                                | unlockStmt
+                                | waitStmt
+                                | whereStmt
+                                | writeStmt
+                                | arithmeticIfStmt
+                                | computedGotoStmt
+                                ;
+
+// R215
+keyword                         : Name ;
+
+// Clause 3
 // R301
 fragment AlphanumericCharacter  : Letter
                                 | Digit
-                                | Underscore;
+                                | Underscore
+                                ;
 
-// 3.1.2
-fragment Letter : [A-Za-z];
+fragment Letter                 : [A-Za-z]
+                                ;
 
-// 3.1.3
-fragment Digit  : [0-9];
+fragment Digit                  : [0-9]
+                                ;
 
-// 3.1.4
-fragment Underscore : '_';
+// R302
+fragment Underscore             : '_'
+                                ;
 
-// 3.2.2
 // R303
-Name    : Letter AlphanumericCharacter*;
+Name                            : Letter AlphanumericCharacter*
+                                ;
+
+// R304
+constant                        : literalConstant
+                                | namedConstant
+                                ;
+
+// R305
+literalConstant                 : intLiteralConstant
+                                | realLiteralConstant
+                                | complexLiteralConstant
+                                | logicalLiteralConstant
+                                | charLiteralConstant
+                                | bozLiteralConstant
+                                ;
+
+// R306
+namedConstant                   : Name ;
+
+// R307
+intConstant                     : constant ;
+
+// R308
+charConstant                    : constant ;
+
+// R309
+intrinsicOperator               : powerOp
+                                | multiOp
+                                | addOp
+                                | concatOp
+                                | relOp
+                                | notOp
+                                | andOp
+                                | orOp
+                                | equivOp
+                                ;
+
+// R310
+definedOperator                 : definedUnaryOp
+                                | definedBinaryOp
+                                | extendedIntrinsicOp
+                                ;
+
+// R311
+extendedIntrinsicOp             : intrinsicOperator ;
+
+// R312
+label                           : Digit 
+                                    (Digit 
+                                    (Digit 
+                                    (Digit
+                                    (Digit
+                                    Digit?)?)?)?)?
+                                ;
 
 // 3.3.2.2
 Whitespace : [ \n] -> skip;
