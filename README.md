@@ -9,4 +9,4 @@ To generate the parser (requires Antlr installed) run
 
     make
 
-Rules are based on the Fortran 2008 draft
+Rules are based on the [Fortran 2008 draft](http://www.j3-fortran.org/doc/year/10/10-007.pdf)
