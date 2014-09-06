@@ -27,11 +27,11 @@ PROGRAM                         : P R O G R A M;
 
 // Generic rules
 // R101
-// xyz-list                     : xyz (',' xyz) ;
+// xyzList                     : xyz (',' xyz)* ;
 // R102
-// xyz-name                     : Name ;
+// xyzName                     : Name ;
 // R103
-// scalar-xyz                   : xyz ;
+// scalarXyz                   : xyz ;
 
 // 2.1
 // R201
@@ -258,29 +258,215 @@ label                           : Digit
 // 3.3.2.2
 Whitespace : [ \n] -> skip;
 
-// 4.3.1.1
-// R402
-typeSpec            : intrinsicTypeSpec
-                    | derivedTypeSpec
-                    ;
-declarationTypeSpec : intrinsicTypeSpec
-                    | TYPE '(' intrinsicTypeSpec ')'
-                    | TYPE '(' derivedTypeSpec ')'
-                    | CLASS '(' derivedTypeSpec ')'
-                    | CLASS '(' '*' ')'
-                    ;
+// Clause 4
 
-// 4.4.1
+// R401
+typeParamValue                  : scalarIntExpr
+                                | '*'
+                                | ':'
+                                ;
+
+// R402
+typeSpec                        : intrinsicTypeSpec
+                                | derivedTypeSpec
+                                ;
+
+// R403
+declarationTypeSpec             : intrinsicTypeSpec
+                                | TYPE '(' intrinsicTypeSpec ')'
+                                | TYPE '(' derivedTypeSpec ')'
+                                | CLASS '(' derivedTypeSpec ')'
+                                | CLASS '(' '*' ')'
+                                ;
+
 // R404
-intrinsicTypeSpec   : INTEGER kindSelector?
-                    | REAL kindSelector?
-                    | DOUBLE PRECISION
-                    | COMPLEX kindSelector?
-                    | CHARACTER charSelector?
-                    | LOGICAL kindSelector?
-                    ;
+intrinsicTypeSpec               : INTEGER kindSelector?
+                                | REAL kindSelector?
+                                | DOUBLE PRECISION
+                                | COMPLEX kindSelector?
+                                | CHARACTER charSelector?
+                                | LOGICAL kindSelector?
+                                ;
 // R405
-kindSelector        : '(' (KIND '=')? scalarIntConstantExpr ')';
+kindSelector                    : '(' 
+                                    (KIND '=')? 
+                                    scalarIntConstantExpr 
+                                    ')'
+                                ;
+
+// R406
+signedIntLiteralConstant        : sign? intLiteralConstant ;
+// R407
+intLiteralConstant              : digitString 
+                                    ('_' kindParam)? 
+                                ;
+// R408
+kindParam                       : digitString
+                                | scalarIntConstantName
+                                ;
+scalarIntConstantName           : Name ;
+// R409
+signedDigitString               : sign? digitString ;
+// R410
+digitString                     : Digit+ ;
+// R411
+sign                            : '+' | '-' ;
+// R412
+signedRealLiteralConstant       : sign? realLiteralConstant ;
+// R413
+realLiteralConstant             : significand
+                                    (exponentLetter exponent)?
+                                    ('_' kindParam)?
+                                | digitString
+                                    exponentLetter exponent
+                                    ('_' kindParam)?
+                                ;
+// R414
+significand                     : digitString '.' digitString?
+                                | '.' digitString
+                                ;
+// R415
+exponentLetter                  : E | D ;
+// R416
+exponent                        : signedDigitString ;
+// R417
+complexLiteralConstant          : '(' realPart ',' imagPart ')' ;
+// R418
+realPart                        : signedIntLiteralConstant
+                                | signedRealLiteralConstant
+                                | namedConstant
+                                ;
+// R419
+imagPart                        : signedIntLiteralConstant
+                                | signedRealLiteralConstant
+                                | namedConstant
+                                ;
+// R420
+charSelector                    : lengthSelector
+                                | '(' LEN '=' typeParamValue ','
+                                    KIND '=' scalarIntConstantExpr ')'
+                                | '(' typeParamValue ','
+                                    (KIND '=')? scalarIntConstantExpr ')'
+                                | '(' KIND '=' scalarIntConstantExpr
+                                    (',' LEN '=' typeParamValue)? ')'
+                                ;
+// R421
+lengthSelector                  : '(' (LEN '=')? typeParamValue ')'
+                                | '*' charLength ','?
+                                ;
+
+// R422
+charLength                      : '(' typeParamValue ')'
+                                | intLiteralConstant
+                                ;
+
+// R423
+charLiteralConstant             : (kindParam '_')? '\'' repChar* '\''
+                                | (kindParam '_')? '"' repChar* '"'
+                                ; 
+// R424
+logicalLiteralConstant          : '.' TRUE '.' ('_' kindParam)?
+                                | '.' FALSE '.' ('_' kindParam)?
+                                ;
+// R425
+derivedTypeDef                  : derivedTypeStmt
+                                    typeParamDefStmt?
+                                    privateOrSequence?
+                                    componentPart?
+                                    typeBoundProcedurePart?
+                                    endTypeStmt
+                                ;
+// R426
+derivedTypeStmt                 : TYPE ((',' typeAttrSpecList)? '::')?
+                                    typeName
+                                    ('(' typeParamNameList ')')?
+                                ;
+typeName                        : Name ;
+typeParamName                   : Name ;
+typeParamNameList               : typeParamName (',' typeParamName)* ;
+ 
+
+// R427
+typeAttrSpec                    : ABSTRACT
+                                | accessSpec
+                                | BIND '(' C ')'
+                                | EXTENDS '(' parentTypeName ')'
+                                ;
+parentTypeName                  : Name ;
+typeAttrSpecList                : typeAttrSpec (',' typeAttrSpec)* ;
+// R428
+privateOrSequence               : privateComponentsStmt
+                                | sequenceStmt
+                                ;
+// R429
+endTypeStmt                     : END TYPE (typeName)? ;
+// R430
+sequenceStmt                    : SEQUENCE ;
+// R431
+typeParamDefStmt                : INTEGER (kindSelector)? ','
+                                    typeParamAttrSpec '::'
+                                    typeParamDeclList
+                                ;
+typeParamDeclList               : typeParamDecl (',' typeParamDecl)* ;
+// R432
+typeParamDecl                   : typeParamName
+                                    ( '=' scalarIntConstantExpr )?
+                                ;
+// R433
+typeParamAttrSpec               : KIND
+                                | LEN
+                                ;
+// R434
+componentPart                   : componentDefStmt* ;
+// R435
+componentDefStmt                : dataComponentDefStmt
+                                | procComponentDefStmt
+                                ;
+// R436
+dataComponentDefStmt            : declarationTypeSpec
+                                    ((',' componentAttrSpecList)? '::')?
+                                    componentDeclList
+                                ;
+componentAttrSpecList           : componentAttrSpec (',' componentAttrSpec)* ;
+componentDeclList               : componentDecl (',' componentDecl)* ;
+// R437
+componentAttrSpec               : accessSpec
+                                | ALLOCATABLE
+                                | CODIMENSION '[' coarraySpec ']'
+                                | CONTIGUOUS
+                                | DIMENSION '(' componentArraySpec ')'
+                                | POINTER
+                                ;
+// R438
+componentDecl                   : componentName 
+                                    ('(' componentArraySpec ')')?
+                                    ('[' coarraySpec ']')?
+                                    ('*' charLength)?
+                                    (componentInitialization)?
+                                ;
+componentName                   : Name ;
+// R439
+componentArraySpec              : explicitShapeSpecList
+                                | deferredShapeSpecList
+                                ;
+explicitShapeSpecList           : explicitShapeSpec (',' explicitShapeSpec)* ;
+deferredShapeSpecList           : deferredShapeSpec (',' deferredShapeSpec)* ;
+// R440
+procComponentDefStmt            : PROCEDURE '(' (procInterface)? ')' ','
+                                    procComponentAttrSpecList '::'
+                                    procDeclList
+                                ;
+procComponentAttrSpecList       : procComponentAttrSpec (',' procComponentAttrSpec)* ;
+procDeclList                    : procDecl (',' procDecl)* ;
+// R441
+procComponentAttrSpec           : POINTER
+                                | PASS ('(' argName ')')?
+                                | NOPASS
+                                | accessSpec
+                                ;
+argName                         : Name ;
+
+// TODO
 
 // 7.1.2.3
 // R703
