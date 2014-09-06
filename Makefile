@@ -1,8 +1,12 @@
-all: fortranLexer.py
+all: fortran08Lexer.py fortran08Lexer.java
+
+ANTLR=antlr4
 
 clean:
 	$(RM) *.pyc
 	$(RM) *Lexer.py *.tokens *Listener.py *Parser.py
 
-%Lexer.py %Lexer.tokens %.tokens %Listener.py %Parser.py: %.g4
-	antlr4 -Dlanguage=Python2 $<
+%Lexer.java %Lexer.tokens %.tokens %Listener.java %Parser.java: %.g
+	$(ANTLR) $<
+%Lexer.py %Lexer.tokens %.tokens %Listener.py %Parser.py: %.g
+	$(ANTLR) -Dlanguage=Python2 $<

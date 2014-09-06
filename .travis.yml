@@ -1,0 +1,11 @@
+---
+language: java
+
+install:
+    - wget http://www.antlr.org/download/antlr-4.4-complete.jar
+    - ANTLR='java -jar antlr-4.4-complete.jar'
+
+script:
+    - make
+
+
