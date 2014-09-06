@@ -2,7 +2,7 @@
  * \file    fortran08.g
  * \author  Scott Wales <scott.wales@unimelb.edu.au>
  *
- * Copyright 2014 ARC Centre of Excellence for Climate Systems Science
+ * Copyright 2014 Scott Wales
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
