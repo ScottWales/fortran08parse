@@ -1,6 +1,6 @@
 all: fortran08Lexer.py fortran08Lexer.java
 
-ANTLR=antlr4
+ANTLR?=antlr4
 
 clean:
 	$(RM) *.pyc
